@@ -83,9 +83,12 @@ QINIU_SECRET_KEY=your_secret_key
 QINIU_BUCKET=your_bucket_name
 QINIU_DOMAIN=https://your-cdn-domain.com
 
-# 微信小程序配置
-WX_APPID=your_appid
-WX_SECRET=your_secret
+# 微信小程序配置 - 必须配置正确，否则登录会失败！
+# 获取方式：登录微信公众平台 https://mp.weixin.qq.com/
+# 进入：开发管理 -> 开发设置 -> 开发者ID
+# ⚠️ 注意：必须是正式小程序的 AppID，测试号的 AppID 无效
+WX_APPID=wxe469358a90ddacb1           # 替换为你的小程序 AppID
+WX_SECRET=bb2b45f8b14b1ce1c509776c66acff3f  # 替换为你的小程序 AppSecret
 
 # 服务器配置
 PORT=3005

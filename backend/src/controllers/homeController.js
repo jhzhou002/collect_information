@@ -18,11 +18,18 @@ exports.getHomeConfig = async (req, res) => {
       ['instruction']
     );
 
+    // 获取启用的通知文本（只取第一条）
+    const [notices] = await pool.query(
+      'SELECT content FROM home_config WHERE type = ? AND is_active = 1 LIMIT 1',
+      ['notice']
+    );
+
     res.json({
       success: true,
       data: {
         banners: banners.map(item => item.content),
-        instructionHtml: instructions.length > 0 ? instructions[0].content : ''
+        instructionHtml: instructions.length > 0 ? instructions[0].content : '',
+        noticeText: notices.length > 0 ? notices[0].content : ''
       }
     });
   } catch (error) {

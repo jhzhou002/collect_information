@@ -23,7 +23,10 @@ exports.wxLogin = async (req, res) => {
     console.log('========== 微信登录请求 ==========');
     console.log('Code:', code);
     console.log('APPID:', process.env.WX_APPID);
-    console.log('SECRET:', process.env.WX_SECRET ? '已配置' : '未配置');
+    console.log('APPID前6位:', process.env.WX_APPID ? process.env.WX_APPID.substring(0, 6) : '未配置');
+    console.log('SECRET:', process.env.WX_SECRET ? '已配置(长度:' + process.env.WX_SECRET.length + ')' : '未配置');
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('PORT:', process.env.PORT);
 
     // 调用微信接口获取openid
     const wxApiUrl = 'https://api.weixin.qq.com/sns/jscode2session';

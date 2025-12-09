@@ -1,7 +1,7 @@
 <!--index.wxml-->
 <view class="container">
   <!-- 轮播图 -->
-  <view class="swiper-container">
+  <view class="swiper-container" wx:if="{{banners.length > 0}}">
     <swiper
       class="swiper"
       indicator-dots="{{true}}"
@@ -13,9 +13,17 @@
       circular="{{true}}"
     >
       <swiper-item wx:for="{{banners}}" wx:key="index">
-        <image class="swiper-image" src="{{item}}" mode="aspectFill" />
+        <image class="swiper-image" src="{{item}}" mode="aspectFill" lazy-load="{{true}}" />
       </swiper-item>
     </swiper>
+  </view>
+
+  <!-- 通知条 -->
+  <view class="notice-bar" wx:if="{{noticeText}}">
+    <view class="notice-icon">📢</view>
+    <view class="notice-content">
+      <view class="notice-text" animation="{{noticeAnimation}}">{{noticeText}}</view>
+    </view>
   </view>
 
   <!-- 功能区 -->
@@ -39,7 +47,8 @@
     <!-- 说明文字 -->
     <view class="tips-section">
       <text class="tips-title">📌 使用说明</text>
-      <rich-text class="tips-content" nodes="{{instructionHtml}}"></rich-text>
+      <rich-text wx:if="{{instructionHtml}}" class="tips-content" nodes="{{instructionHtml}}"></rich-text>
+      <text wx:else class="tips-content">加载中...</text>
     </view>
   </view>
 </view>

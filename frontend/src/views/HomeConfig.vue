@@ -2,7 +2,7 @@
   <div class="home-config">
     <el-card class="header-card">
       <h2>首页配置管理</h2>
-      <p class="subtitle">管理小程序首页的轮播图和使用说明</p>
+      <p class="subtitle">管理小程序首页的轮播图、通知栏和使用说明</p>
     </el-card>
 
     <!-- 轮播图管理 -->
@@ -90,6 +90,38 @@
       </div>
     </el-card>
 
+    <!-- 通知管理 -->
+    <el-card class="section-card">
+      <template #header>
+        <div class="card-header">
+          <span class="title">📢 通知栏管理</span>
+          <el-button type="primary" @click="handleSaveNotice" :loading="savingNotice">保存</el-button>
+        </div>
+      </template>
+
+      <el-input
+        v-model="noticeContent"
+        type="textarea"
+        :rows="3"
+        placeholder="请输入通知内容，将在首页轮播图下方滚动显示"
+        maxlength="200"
+        show-word-limit
+      />
+
+      <div class="editor-tips" style="margin-top: 15px;">
+        <el-alert
+          title="提示"
+          type="info"
+          :closable="false"
+          show-icon
+        >
+          <p>• 通知内容会在小程序首页轮播图下方以滚动形式展示</p>
+          <p>• 建议控制在50字以内,过长的内容会影响滚动效果</p>
+          <p>• 留空则不显示通知栏</p>
+        </el-alert>
+      </div>
+    </el-card>
+
     <!-- 轮播图编辑对话框 -->
     <el-dialog
       v-model="bannerDialogVisible"
@@ -130,6 +162,7 @@ import { getHomeConfigs, addHomeConfig, updateHomeConfig, deleteHomeConfig, uplo
 
 const configs = ref([])
 const saving = ref(false)
+const savingNotice = ref(false)
 
 // 轮播图数据
 const banners = computed(() => {
@@ -141,6 +174,14 @@ const instructionData = computed(() => {
   const list = configs.value.filter(item => item.type === 'instruction')
   return list.length > 0 ? list[0] : null
 })
+
+// 通知数据 - 只取第一条
+const noticeData = computed(() => {
+  const list = configs.value.filter(item => item.type === 'notice')
+  return list.length > 0 ? list[0] : null
+})
+
+const noticeContent = ref('')
 
 // 富文本编辑器
 const editorRef = shallowRef()
@@ -256,6 +297,11 @@ const loadData = async () => {
     if (instructionData.value) {
       instructionContent.value = instructionData.value.content || ''
     }
+
+    // 加载通知内容
+    if (noticeData.value) {
+      noticeContent.value = noticeData.value.content || ''
+    }
   } catch (error) {
     ElMessage.error('加载数据失败')
   }
@@ -335,6 +381,36 @@ const handleSaveInstruction = async () => {
     ElMessage.error(error.message || '保存失败')
   } finally {
     saving.value = false
+  }
+}
+
+// 保存通知
+const handleSaveNotice = async () => {
+  try {
+    savingNotice.value = true
+
+    const data = {
+      type: 'notice',
+      content: noticeContent.value || '',
+      sort_order: 0,
+      is_active: 1
+    }
+
+    if (noticeData.value) {
+      // 更新现有记录
+      await updateHomeConfig(noticeData.value.id, data)
+      ElMessage.success('通知更新成功')
+    } else {
+      // 创建新记录
+      await addHomeConfig(data)
+      ElMessage.success('通知保存成功')
+    }
+
+    loadData()
+  } catch (error) {
+    ElMessage.error(error.message || '保存失败')
+  } finally {
+    savingNotice.value = false
   }
 }
 

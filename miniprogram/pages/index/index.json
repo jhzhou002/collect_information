@@ -1,3 +1,5 @@
 {
-  "navigationBarTitleText": "小信册"
+  "navigationBarTitleText": "小信册",
+  "disableScroll": false,
+  "enablePullDownRefresh": false
 }
