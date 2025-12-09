@@ -88,7 +88,7 @@ WX_APPID=your_appid
 WX_SECRET=your_secret
 
 # 服务器配置
-PORT=3000
+PORT=3005
 NODE_ENV=production
 ```
 
@@ -121,7 +121,7 @@ module.exports = {
     exec_mode: 'cluster',
     env: {
       NODE_ENV: 'production',
-      PORT: 3000
+      PORT: 3005
     },
     error_file: './logs/err.log',
     out_file: './logs/out.log',
@@ -186,7 +186,7 @@ server {
 
     # API反向代理
     location /api {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:3005;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -207,7 +207,7 @@ server {
 
     # 健康检查
     location /api/health {
-        proxy_pass http://127.0.0.1:3000/api/health;
+        proxy_pass http://127.0.0.1:3005/api/health;
     }
 }
 ```
@@ -416,7 +416,7 @@ chmod 600 /www/wwwroot/collect-api/backend/.env
 ### 3. 防火墙配置
 在宝塔面板 -> 安全中：
 - 只开放 80、443、22(SSH) 端口
-- 3000端口（Node.js）不要对外开放，只允许本地访问
+- 3005端口（Node.js）不要对外开放，只允许本地访问
 - 配置SSH密钥登录
 
 ### 4. 定期更新
@@ -485,7 +485,7 @@ chmod +x /www/wwwroot/collect-api/clean-logs.sh
 pm2 logs collect-api --lines 100
 
 # 常见原因：
-# - 端口被占用（检查是否有其他进程占用3000端口）
+# - 端口被占用（检查是否有其他进程占用3005端口）
 # - 数据库连接失败（检查.env配置）
 # - 依赖安装不完整（重新npm install）
 ```
