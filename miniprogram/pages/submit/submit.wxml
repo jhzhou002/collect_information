@@ -1,0 +1,75 @@
+<!--pages/submit/submit.wxml-->
+<view class="container">
+  <view class="page-header">
+    <text class="page-title">信息登记</text>
+    <text class="page-subtitle">请填写以下信息</text>
+  </view>
+
+  <!-- 提交表单 -->
+  <view class="form-container">
+    <!-- 昵称输入 -->
+    <view class="form-item">
+      <view class="form-label">
+        <text class="label-text">昵称</text>
+        <text class="required">*</text>
+      </view>
+      <input
+        class="form-input"
+        type="text"
+        placeholder="请输入您的昵称"
+        value="{{nickname}}"
+        bindinput="onNicknameInput"
+        maxlength="50"
+      />
+    </view>
+
+    <!-- 链接列表 -->
+    <view class="form-item">
+      <view class="form-label">
+        <text class="label-text">文章链接</text>
+        <text class="required">*</text>
+      </view>
+
+      <view wx:for="{{links}}" wx:key="index" class="link-item">
+        <view class="link-header">
+          <text class="link-number">链接 {{index + 1}}</text>
+          <view
+            wx:if="{{links.length > 1}}"
+            class="delete-icon"
+            data-index="{{index}}"
+            bindtap="deleteLink"
+          >
+            <text>×</text>
+          </view>
+        </view>
+        <textarea
+          class="link-textarea"
+          placeholder="粘贴链接或包含链接的文本，支持自动识别"
+          value="{{item}}"
+          data-index="{{index}}"
+          bindinput="onLinkInput"
+          bindblur="onLinkBlur"
+          auto-height
+          maxlength="500"
+        />
+      </view>
+
+      <view
+        wx:if="{{links.length < 10}}"
+        class="add-link-btn"
+        bindtap="addLink"
+      >
+        <text class="add-icon">+</text>
+        <text class="add-text">添加链接</text>
+      </view>
+      <view wx:else class="limit-tips">
+        已达到最大链接数量（10个）
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <button class="submit-button" bindtap="handleSubmit">
+      <text>提交</text>
+    </button>
+  </view>
+</view>

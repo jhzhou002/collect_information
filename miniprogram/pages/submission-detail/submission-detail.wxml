@@ -1,0 +1,60 @@
+<!--pages/submission-detail/submission-detail.wxml-->
+<view class="container">
+  <view wx:if="{{submission}}" class="detail-container">
+    <!-- 基本信息 -->
+    <view class="info-card">
+      <view class="card-header">
+        <text class="card-title">📝 基本信息</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">昵称</text>
+        <text class="info-value">{{submission.nickname}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">提交时间</text>
+        <text class="info-value">{{formattedTime}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">结算状态</text>
+        <view class="status-badge {{submission.is_settled ? 'settled' : 'unsettled'}}">
+          {{submission.is_settled ? '已结算' : '未结算'}}
+        </view>
+      </view>
+      <view wx:if="{{submission.remark}}" class="info-row">
+        <text class="info-label">备注</text>
+        <text class="info-value remark">{{submission.remark}}</text>
+      </view>
+    </view>
+
+    <!-- 链接列表 -->
+    <view class="links-card">
+      <view class="card-header">
+        <text class="card-title">🔗 文章链接</text>
+        <text class="link-count">共 {{links.length}} 个链接</text>
+      </view>
+      <view class="links-list">
+        <view wx:for="{{links}}" wx:key="id" class="link-item">
+          <view class="link-header">
+            <text class="link-number">链接 {{index + 1}}</text>
+          </view>
+          <view class="link-content" data-url="{{item.url}}" bindtap="copyLink">
+            <text class="link-url">{{item.url}}</text>
+            <text class="copy-icon">📋</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="actions">
+      <button class="action-button secondary" bindtap="goBack">
+        返回列表
+      </button>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:else class="loading">
+    <text>加载中...</text>
+  </view>
+</view>

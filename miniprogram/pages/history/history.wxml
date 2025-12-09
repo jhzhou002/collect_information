@@ -1,0 +1,38 @@
+<!--pages/history/history.wxml-->
+<view class="container">
+  <!-- 列表 -->
+  <view wx:if="{{list.length > 0}}" class="history-list">
+    <view
+      wx:for="{{list}}"
+      wx:key="id"
+      class="history-item card"
+      bindtap="viewDetail"
+      data-id="{{item.id}}"
+    >
+      <view class="item-header">
+        <text class="nickname">{{item.submit_nickname}}</text>
+        <view class="status {{item.status === '已结算' ? 'status-paid' : 'status-unpaid'}}">
+          {{item.status}}
+        </view>
+      </view>
+
+      <view class="item-info">
+        <text class="info-label">链接数量：</text>
+        <text class="info-value">{{item.link_count}}条</text>
+      </view>
+
+      <view class="item-info">
+        <text class="info-label">提交时间：</text>
+        <text class="info-value">{{item.created_at}}</text>
+      </view>
+
+      <view class="item-arrow">></view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:else class="empty-state card">
+    <text class="empty-icon">📄</text>
+    <text class="empty-text">暂无提交记录</text>
+  </view>
+</view>

@@ -1,0 +1,66 @@
+<!--pages/mine/mine.wxml-->
+<view class="container">
+  <!-- 顶部背景 -->
+  <view class="header-bg">
+    <view class="header-content">
+      <!-- 用户信息卡片 -->
+      <view class="user-card">
+        <!-- 未登录状态 -->
+        <view wx:if="{{!isLoggedIn}}" class="user-info" bindtap="handleLogin">
+          <image class="avatar" src="/images/default-avatar.png" mode="aspectFill" />
+          <view class="user-detail">
+            <text class="username">点击头像登录</text>
+            <text class="login-tips">登录后可使用更多功能</text>
+          </view>
+          <view class="login-arrow">→</view>
+        </view>
+
+        <!-- 已登录状态 -->
+        <view wx:else class="user-info">
+          <image class="avatar" src="{{userInfo.avatar || '/images/default-avatar.png'}}" mode="aspectFill" />
+          <view class="user-detail">
+            <text class="username">{{userInfo.nickname || '未设置昵称'}}</text>
+            <text class="user-status">已登录</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="menu-section">
+    <!-- 我的二维码 -->
+    <view class="menu-group">
+      <view class="menu-item" bindtap="goToUploadQrcode">
+        <view class="menu-left">
+          <view class="menu-icon" style="background: linear-gradient(135deg, #e6c89f 0%, #d4986a 100%);">📱</view>
+          <text class="menu-text">我的二维码</text>
+        </view>
+        <view class="menu-right">
+          <text class="menu-badge" wx:if="{{!userInfo.qrcode_url}}">未上传</text>
+          <text class="menu-arrow">→</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 数据管理 -->
+    <view class="menu-group">
+      <view class="menu-item" bindtap="goToHistory">
+        <view class="menu-left">
+          <view class="menu-icon" style="background: linear-gradient(135deg, #f5ebe0 0%, #e6c89f 100%);">📄</view>
+          <text class="menu-text">提交历史</text>
+        </view>
+        <view class="menu-right">
+          <text class="menu-arrow">→</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 退出登录 -->
+    <view wx:if="{{isLoggedIn}}" class="logout-section">
+      <button class="logout-button" bindtap="handleLogout">
+        退出登录
+      </button>
+    </view>
+  </view>
+</view>

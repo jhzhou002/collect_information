@@ -1,0 +1,71 @@
+/* pages/upload-qrcode/upload-qrcode.wxss */
+.tips {
+  text-align: center;
+  color: #666;
+  font-size: 28rpx;
+  margin-bottom: 40rpx;
+}
+
+.qrcode-preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 40rpx 0;
+}
+
+.qrcode-image {
+  width: 500rpx;
+  height: 500rpx;
+  border: 2rpx solid #e6e6e6;
+  border-radius: 8rpx;
+}
+
+.qrcode-placeholder {
+  width: 500rpx;
+  height: 500rpx;
+  border: 2rpx dashed #e6e6e6;
+  border-radius: 8rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #fafafa;
+}
+
+.placeholder-icon {
+  font-size: 120rpx;
+  margin-bottom: 20rpx;
+}
+
+.placeholder-text {
+  color: #999;
+  font-size: 28rpx;
+}
+
+.button-group {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 40rpx;
+}
+
+.upload-btn {
+  flex: 1;
+  background-color: #f5ebe0;
+  color: #8b7355;
+  border-radius: 8rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  font-size: 32rpx;
+}
+
+.save-btn {
+  flex: 1;
+  background-color: #c77a4d;
+  color: #fff;
+  border-radius: 8rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  font-size: 32rpx;
+}

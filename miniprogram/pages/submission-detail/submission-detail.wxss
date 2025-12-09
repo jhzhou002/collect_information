@@ -1,0 +1,180 @@
+/* pages/submission-detail/submission-detail.wxss */
+page {
+  background-color: #f5f5f5;
+}
+
+.container {
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+}
+
+/* 详情容器 */
+.detail-container {
+  padding: 30rpx;
+}
+
+/* 信息卡片 */
+.info-card,
+.links-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.link-count {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 信息行 */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 28rpx;
+  color: #666;
+  min-width: 140rpx;
+}
+
+.info-value {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333;
+  text-align: right;
+  word-break: break-all;
+}
+
+.info-value.remark {
+  background: #f9f9f9;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  text-align: left;
+  margin-left: 20rpx;
+}
+
+/* 状态徽章 */
+.status-badge {
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+}
+
+.status-badge.settled {
+  background: #f0f9ff;
+  color: #1890ff;
+}
+
+.status-badge.unsettled {
+  background: #fff7e6;
+  color: #fa8c16;
+}
+
+/* 链接列表 */
+.links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.link-item {
+  background: #f9f9f9;
+  border-radius: 12rpx;
+  padding: 20rpx;
+}
+
+.link-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.link-number {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.link-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  border: 2rpx solid #e8e8e8;
+}
+
+.link-url {
+  flex: 1;
+  font-size: 26rpx;
+  color: #1890ff;
+  word-break: break-all;
+  margin-right: 16rpx;
+}
+
+.copy-icon {
+  font-size: 32rpx;
+  flex-shrink: 0;
+}
+
+/* 操作按钮 */
+.actions {
+  margin-top: 40rpx;
+  display: flex;
+  gap: 20rpx;
+}
+
+.action-button {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 12rpx;
+  font-size: 32rpx;
+  border: none;
+}
+
+.action-button.secondary {
+  background: #fff;
+  color: #666;
+  border: 2rpx solid #d9d9d9;
+}
+
+.action-button::after {
+  border: none;
+}
+
+/* 加载中 */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 200rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}

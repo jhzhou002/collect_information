@@ -1,0 +1,45 @@
+<!--index.wxml-->
+<view class="container">
+  <!-- 轮播图 -->
+  <view class="swiper-container">
+    <swiper
+      class="swiper"
+      indicator-dots="{{true}}"
+      indicator-color="rgba(255, 255, 255, 0.5)"
+      indicator-active-color="#fff"
+      autoplay="{{true}}"
+      interval="{{3000}}"
+      duration="{{500}}"
+      circular="{{true}}"
+    >
+      <swiper-item wx:for="{{banners}}" wx:key="index">
+        <image class="swiper-image" src="{{item}}" mode="aspectFill" />
+      </swiper-item>
+    </swiper>
+  </view>
+
+  <!-- 功能区 -->
+  <view class="content">
+    <!-- 欢迎标题 -->
+    <view class="welcome-section">
+      <text class="welcome-title">欢迎使用信息收集系统</text>
+      <text class="welcome-subtitle">请点击下方按钮进行信息登记</text>
+    </view>
+
+    <!-- 登记按钮 -->
+    <view class="register-button" bindtap="goToSubmit">
+      <view class="button-icon">📝</view>
+      <view class="button-content">
+        <text class="button-title">信息登记</text>
+        <text class="button-desc">点击填写您的信息</text>
+      </view>
+      <view class="button-arrow">→</view>
+    </view>
+
+    <!-- 说明文字 -->
+    <view class="tips-section">
+      <text class="tips-title">📌 使用说明</text>
+      <rich-text class="tips-content" nodes="{{instructionHtml}}"></rich-text>
+    </view>
+  </view>
+</view>
