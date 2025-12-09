@@ -6,11 +6,11 @@
       <!-- 用户信息卡片 -->
       <view class="user-card">
         <!-- 未登录状态 -->
-        <view wx:if="{{!isLoggedIn}}" class="user-info" bindtap="handleLogin">
+        <view wx:if="{{!isLoggedIn}}" class="user-info login-view" bindtap="handleLogin">
           <image class="avatar" src="/images/default-avatar.png" mode="aspectFill" />
           <view class="user-detail">
-            <text class="username">点击头像登录</text>
-            <text class="login-tips">登录后可使用更多功能</text>
+            <text class="username">点击登录</text>
+            <text class="login-tips">登录后可使用完整功能</text>
           </view>
           <view class="login-arrow">→</view>
         </view>
@@ -61,6 +61,55 @@
       <button class="logout-button" bindtap="handleLogout">
         退出登录
       </button>
+    </view>
+  </view>
+
+  <!-- 完善资料弹窗 -->
+  <view wx:if="{{showProfileModal}}" class="profile-modal">
+    <view class="modal-mask" bindtap="handleSkipProfile"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">完善个人资料</text>
+        <text class="modal-skip" bindtap="handleSkipProfile">跳过</text>
+      </view>
+
+      <view class="modal-body">
+        <!-- 头像选择 -->
+        <view class="form-section">
+          <text class="section-title">头像</text>
+          <view class="avatar-options">
+            <!-- 微信头像 -->
+            <button class="avatar-option {{useWxAvatar ? 'active' : ''}}" open-type="chooseAvatar" bindchooseavatar="handleChooseAvatar">
+              <image class="option-avatar" src="{{wxAvatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
+              <text class="option-label">微信头像</text>
+            </button>
+
+            <!-- 自定义头像 -->
+            <view class="avatar-option {{!useWxAvatar ? 'active' : ''}}" bindtap="handleUploadCustomAvatar">
+              <image class="option-avatar" src="{{tempAvatar || '/images/default-avatar.png'}}" mode="aspectFill" />
+              <text class="option-label">上传头像</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 昵称输入 -->
+        <view class="form-section">
+          <text class="section-title">昵称</text>
+          <input
+            class="nickname-input"
+            type="nickname"
+            placeholder="请输入昵称"
+            value="{{useWxNickname ? wxNickname : tempNickname}}"
+            bindinput="handleNicknameInput"
+            bindblur="handleNicknameBlur"
+          />
+          <text class="input-tips">使用微信昵称输入法或自定义昵称</text>
+        </view>
+      </view>
+
+      <view class="modal-footer">
+        <button class="complete-btn" bindtap="handleCompleteProfile">完成</button>
+      </view>
     </view>
   </view>
 </view>

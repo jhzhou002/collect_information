@@ -36,6 +36,64 @@ exports.getProfile = async (req, res) => {
 };
 
 /**
+ * 更新用户信息
+ * PUT /api/user/profile
+ */
+exports.updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { nickname, avatar } = req.body;
+
+    const updates = [];
+    const values = [];
+
+    if (nickname !== undefined) {
+      updates.push('nickname = ?');
+      values.push(nickname);
+    }
+
+    if (avatar !== undefined) {
+      updates.push('avatar = ?');
+      values.push(avatar);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: '没有要更新的字段'
+      });
+    }
+
+    values.push(userId);
+
+    await pool.query(
+      `UPDATE users SET ${updates.join(', ')} WHERE id = ?`,
+      values
+    );
+
+    // 获取更新后的用户信息
+    const [users] = await pool.query(
+      'SELECT id, openid, nickname, avatar, qrcode_url FROM users WHERE id = ?',
+      [userId]
+    );
+
+    res.json({
+      success: true,
+      message: '更新成功',
+      data: users[0]
+    });
+
+  } catch (error) {
+    console.error('更新用户信息错误:', error);
+    res.status(500).json({
+      success: false,
+      message: '更新失败',
+      error: error.message
+    });
+  }
+};
+
+/**
  * 更新二维码
  * POST /api/user/qrcode
  */
@@ -88,6 +146,30 @@ exports.getUploadToken = async (req, res) => {
 
   } catch (error) {
     console.error('获取上传凭证错误:', error);
+    res.status(500).json({
+      success: false,
+      message: '获取上传凭证失败',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * 获取公开的七牛云上传凭证（无需认证，用于登录流程）
+ * GET /api/user/public-upload-token
+ */
+exports.getPublicUploadToken = async (req, res) => {
+  try {
+    const { generateUploadToken } = require('../config/qiniu');
+    const tokenData = generateUploadToken();
+
+    res.json({
+      success: true,
+      data: tokenData
+    });
+
+  } catch (error) {
+    console.error('获取公开上传凭证错误:', error);
     res.status(500).json({
       success: false,
       message: '获取上传凭证失败',

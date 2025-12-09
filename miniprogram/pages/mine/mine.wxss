@@ -68,6 +68,11 @@ page {
   font-weight: bold;
 }
 
+/* 登录视图 */
+.login-view {
+  cursor: pointer;
+}
+
 /* 功能菜单 */
 .menu-section {
   padding: 0 30rpx;
@@ -148,5 +153,151 @@ page {
 }
 
 .logout-button::after {
+  border: none;
+}
+
+/* 完善资料弹窗 */
+.profile-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+}
+
+.modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40rpx 30rpx 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.modal-skip {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.modal-body {
+  padding: 30rpx;
+}
+
+.form-section {
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+}
+
+/* 头像选择 */
+.avatar-options {
+  display: flex;
+  gap: 30rpx;
+}
+
+.avatar-option {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30rpx 20rpx;
+  background: #f5f5f5;
+  border-radius: 16rpx;
+  border: 3rpx solid transparent;
+  transition: all 0.3s;
+}
+
+.avatar-option.active {
+  background: #fff4e6;
+  border-color: #c77a4d;
+}
+
+.avatar-option::after {
+  border: none;
+}
+
+.option-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  margin-bottom: 16rpx;
+}
+
+.option-label {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.avatar-option.active .option-label {
+  color: #c77a4d;
+  font-weight: bold;
+}
+
+/* 昵称输入 */
+.nickname-input {
+  width: 100%;
+  height: 88rpx;
+  padding: 0 24rpx;
+  background: #f5f5f5;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.input-tips {
+  display: block;
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 12rpx;
+}
+
+.modal-footer {
+  padding: 20rpx 30rpx 40rpx;
+}
+
+.complete-btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: linear-gradient(135deg, #d4986a 0%, #c77a4d 100%);
+  color: #fff;
+  border-radius: 12rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  border: none;
+}
+
+.complete-btn::after {
   border: none;
 }
