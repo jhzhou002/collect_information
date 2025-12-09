@@ -3,7 +3,8 @@ App({
   globalData: {
     userInfo: null,
     token: null,
-    apiBase: 'http://127.0.0.1:3000/api' // 替换为实际的API地址
+    // apiBase: 'http://127.0.0.1:3000/api'
+    apiBase: 'https://collectapi.aihuzone.cn/api' // 替换为实际的API地址
   },
 
   onLaunch() {
