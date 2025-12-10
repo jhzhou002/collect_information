@@ -6,7 +6,7 @@
     </view>
 
     <!-- 二维码预览 -->
-    <view class="qrcode-preview">
+    <view class="qrcode-preview" bindtap="chooseImage">
       <image
         wx:if="{{qrcodeUrl}}"
         class="qrcode-image"

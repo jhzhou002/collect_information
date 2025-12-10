@@ -90,3 +90,70 @@ exports.getUserDetail = async (req, res) => {
     });
   }
 };
+
+/**
+ * 删除用户（管理端）
+ * DELETE /api/admin/users/:id
+ */
+exports.deleteUser = async (req, res) => {
+  const connection = await pool.getConnection();
+
+  try {
+    const userId = req.params.id;
+
+    // 开启事务
+    await connection.beginTransaction();
+
+    // 检查用户是否存在
+    const [users] = await connection.query(
+      'SELECT * FROM users WHERE id = ?',
+      [userId]
+    );
+
+    if (users.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({
+        success: false,
+        message: '用户不存在'
+      });
+    }
+
+    // 删除用户的提交记录的链接
+    await connection.query(
+      'DELETE FROM links WHERE submission_id IN (SELECT id FROM submissions WHERE user_id = ?)',
+      [userId]
+    );
+
+    // 删除用户的提交记录
+    await connection.query(
+      'DELETE FROM submissions WHERE user_id = ?',
+      [userId]
+    );
+
+    // 删除用户
+    await connection.query(
+      'DELETE FROM users WHERE id = ?',
+      [userId]
+    );
+
+    // 提交事务
+    await connection.commit();
+
+    res.json({
+      success: true,
+      message: '用户删除成功'
+    });
+
+  } catch (error) {
+    // 回滚事务
+    await connection.rollback();
+    console.error('删除用户错误:', error);
+    res.status(500).json({
+      success: false,
+      message: '删除用户失败',
+      error: error.message
+    });
+  } finally {
+    connection.release();
+  }
+};

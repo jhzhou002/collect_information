@@ -11,6 +11,13 @@
   justify-content: center;
   align-items: center;
   margin: 40rpx 0;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.qrcode-preview:active {
+  opacity: 0.8;
+  transform: scale(0.98);
 }
 
 .qrcode-image {
@@ -23,13 +30,19 @@
 .qrcode-placeholder {
   width: 500rpx;
   height: 500rpx;
-  border: 2rpx dashed #e6e6e6;
+  border: 2rpx dashed #c77a4d;
   border-radius: 8rpx;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: #fafafa;
+  background: #fff4e6;
+  transition: all 0.3s;
+}
+
+.qrcode-placeholder:active {
+  background: #ffe8cc;
+  border-color: #d4986a;
 }
 
 .placeholder-icon {

@@ -41,5 +41,6 @@ router.delete('/home-config/:id', homeController.deleteConfig);
 // 用户管理
 router.get('/users', userManagementController.getUserList);
 router.get('/users/:id', userManagementController.getUserDetail);
+router.delete('/users/:id', userManagementController.deleteUser);
 
 module.exports = router;

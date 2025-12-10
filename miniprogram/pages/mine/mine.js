@@ -232,51 +232,26 @@ Page({
     if (avatarPath) {
       console.log('检测到头像路径，开始处理头像上传')
       console.log('是否使用微信头像:', useWxAvatar)
+      console.log('头像路径:', avatarPath)
       logger.info('检测到头像，开始处理', { useWxAvatar, avatarPath })
 
-      // 下载头像到本地（如果是微信头像）
-      const processAvatar = useWxAvatar ?
-        new Promise((resolve) => {
-          console.log('开始下载微信头像:', avatarPath)
-          logger.info('开始下载微信头像', { url: avatarPath })
-          wx.downloadFile({
-            url: avatarPath,
-            success(res) {
-              console.log('微信头像下载结果:', res.statusCode)
-              if (res.statusCode === 200) {
-                console.log('微信头像下载成功:', res.tempFilePath)
-                logger.info('微信头像下载成功', { tempFilePath: res.tempFilePath })
-                resolve(res.tempFilePath)
-              } else {
-                console.error('微信头像下载失败，状态码:', res.statusCode)
-                logger.error('微信头像下载失败', { statusCode: res.statusCode })
-                resolve(null)
-              }
-            },
-            fail(err) {
-              console.error('微信头像下载失败:', err)
-              logger.error('微信头像下载请求失败', err)
-              resolve(null)
-            }
-          })
-        }) :
-        Promise.resolve(avatarPath)
+      // 微信官方组件返回的 wxfile:// 协议路径可以直接上传，不需要下载
+      // 自定义上传的也是本地临时路径，也可以直接上传
+      console.log('直接上传头像，路径:', avatarPath)
+      logger.info('准备上传头像', { avatarPath })
 
-      processAvatar.then(localPath => {
-        console.log('准备上传的本地路径:', localPath)
-        logger.info('准备上传头像', { localPath })
-        if (localPath) {
-          // 上传到后端（后端再上传到七牛云）
-          that.uploadAvatarToBackend(localPath, (avatarUrl) => {
-            console.log('头像上传回调，获得URL:', avatarUrl)
-            logger.info('头像上传完成', { avatarUrl, urlLength: avatarUrl ? avatarUrl.length : 0 })
-            // 更新用户资料
-            that.updateUserProfile(finalNickname, avatarUrl)
-          })
+      // 上传到后端（后端再上传到七牛云）
+      that.uploadAvatarToBackend(avatarPath, (avatarUrl) => {
+        console.log('头像上传回调，获得URL:', avatarUrl)
+        logger.info('头像上传完成', { avatarUrl, urlLength: avatarUrl ? avatarUrl.length : 0 })
+
+        if (avatarUrl) {
+          // 更新用户资料
+          that.updateUserProfile(finalNickname, avatarUrl)
         } else {
-          console.warn('头像处理失败，只更新昵称')
-          logger.warn('头像处理失败，只更新昵称')
-          // 头像处理失败，只更新昵称
+          console.warn('头像上传失败，只更新昵称')
+          logger.warn('头像上传失败，只更新昵称')
+          // 头像上传失败，只更新昵称
           that.updateUserProfile(finalNickname, '')
         }
       })
