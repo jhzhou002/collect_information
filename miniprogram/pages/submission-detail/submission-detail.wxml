@@ -4,7 +4,7 @@
     <!-- 基本信息 -->
     <view class="info-card">
       <view class="card-header">
-        <text class="card-title">📝 基本信息</text>
+        <text class="card-title">基本信息</text>
       </view>
       <view class="info-row">
         <text class="info-label">昵称</text>
@@ -20,7 +20,7 @@
           {{submission.is_settled ? '已结算' : '未结算'}}
         </view>
       </view>
-      <view wx:if="{{submission.remark}}" class="info-row">
+      <view class="info-row">
         <text class="info-label">备注</text>
         <text class="info-value remark">{{submission.remark}}</text>
       </view>
@@ -29,7 +29,7 @@
     <!-- 链接列表 -->
     <view class="links-card">
       <view class="card-header">
-        <text class="card-title">🔗 文章链接</text>
+        <text class="card-title">文章链接</text>
         <text class="link-count">共 {{links.length}} 个链接</text>
       </view>
       <view class="links-list">
@@ -39,7 +39,7 @@
           </view>
           <view class="link-content" data-url="{{item.url}}" bindtap="copyLink">
             <text class="link-url">{{item.url}}</text>
-            <text class="copy-icon">📋</text>
+            <text class="copy-icon">复制</text>
           </view>
         </view>
       </view>

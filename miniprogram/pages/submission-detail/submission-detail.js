@@ -35,9 +35,13 @@ Page({
 
       // 格式化时间：2025-12-09 21:06
       const formattedTime = this.formatTime(submission.created_at)
+      const submissionWithRemark = {
+        ...submission,
+        remark: submission.remark || '暂无备注'
+      }
 
       this.setData({
-        submission,
+        submission: submissionWithRemark,
         links,
         formattedTime
       })

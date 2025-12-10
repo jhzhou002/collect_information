@@ -26,13 +26,18 @@
         <text class="info-value">{{item.created_at}}</text>
       </view>
 
+      <view class="item-remark">
+        <text class="remark-label">备注：</text>
+        <text class="remark-value">{{item.remark}}</text>
+      </view>
+
       <view class="item-arrow">></view>
     </view>
   </view>
 
   <!-- 空状态 -->
   <view wx:else class="empty-state card">
-    <text class="empty-icon">📄</text>
+    <text class="empty-icon">—</text>
     <text class="empty-text">暂无提交记录</text>
   </view>
 </view>

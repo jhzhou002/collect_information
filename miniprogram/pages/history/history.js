@@ -29,7 +29,8 @@ Page({
       const formattedList = list.map(item => {
         return {
           ...item,
-          created_at: this.formatTime(item.created_at)
+          created_at: this.formatTime(item.created_at),
+          remark: item.remark || '暂无备注'
         }
       })
 

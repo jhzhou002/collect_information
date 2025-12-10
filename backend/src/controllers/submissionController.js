@@ -104,7 +104,7 @@ exports.getHistory = async (req, res) => {
 
     // 查询提交记录
     const [submissions] = await pool.query(
-      `SELECT id, submit_nickname, link_count, status, created_at
+      `SELECT id, submit_nickname, link_count, status, remark, created_at
        FROM submissions
        WHERE user_id = ?
        ORDER BY created_at DESC
