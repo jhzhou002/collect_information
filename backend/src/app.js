@@ -39,6 +39,7 @@ app.use('/api/submissions', require('./routes/submission'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/home', require('./routes/home'));
 app.use('/api/upload', require('./routes/upload'));
+app.use('/api/log', require('./routes/log'));
 
 // 健康检查
 app.get('/api/health', (req, res) => {

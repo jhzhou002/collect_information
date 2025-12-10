@@ -1,6 +1,7 @@
 // pages/mine/mine.js
 const app = getApp()
 const { wxLogin, getUserProfile } = require('../../api/user')
+const logger = require('../../utils/logger')
 
 Page({
   data: {
@@ -184,9 +185,26 @@ Page({
     const that = this
     const { useWxAvatar, wxAvatarUrl, tempAvatar, useWxNickname, wxNickname, tempNickname } = this.data
 
+    const stateData = {
+      useWxAvatar,
+      wxAvatarUrl,
+      tempAvatar,
+      useWxNickname,
+      wxNickname,
+      tempNickname
+    }
+
+    console.log('========== 完成资料设置 ==========')
+    console.log('data 状态:', stateData)
+    logger.info('开始完成资料设置', stateData)
+
     // 确定最终使用的头像和昵称
     const finalNickname = useWxNickname ? wxNickname : tempNickname
     const avatarPath = useWxAvatar ? wxAvatarUrl : tempAvatar
+
+    console.log('最终昵称:', finalNickname)
+    console.log('最终头像路径:', avatarPath)
+    logger.info('资料设置参数', { finalNickname, avatarPath })
 
     if (!finalNickname) {
       wx.showToast({
@@ -200,19 +218,32 @@ Page({
 
     // 如果有头像，先处理头像上传
     if (avatarPath) {
+      console.log('检测到头像路径，开始处理头像上传')
+      console.log('是否使用微信头像:', useWxAvatar)
+      logger.info('检测到头像，开始处理', { useWxAvatar, avatarPath })
+
       // 下载头像到本地（如果是微信头像）
       const processAvatar = useWxAvatar ?
         new Promise((resolve) => {
+          console.log('开始下载微信头像:', avatarPath)
+          logger.info('开始下载微信头像', { url: avatarPath })
           wx.downloadFile({
             url: avatarPath,
             success(res) {
+              console.log('微信头像下载结果:', res.statusCode)
               if (res.statusCode === 200) {
+                console.log('微信头像下载成功:', res.tempFilePath)
+                logger.info('微信头像下载成功', { tempFilePath: res.tempFilePath })
                 resolve(res.tempFilePath)
               } else {
+                console.error('微信头像下载失败，状态码:', res.statusCode)
+                logger.error('微信头像下载失败', { statusCode: res.statusCode })
                 resolve(null)
               }
             },
-            fail() {
+            fail(err) {
+              console.error('微信头像下载失败:', err)
+              logger.error('微信头像下载请求失败', err)
               resolve(null)
             }
           })
@@ -220,18 +251,26 @@ Page({
         Promise.resolve(avatarPath)
 
       processAvatar.then(localPath => {
+        console.log('准备上传的本地路径:', localPath)
+        logger.info('准备上传头像', { localPath })
         if (localPath) {
           // 上传到七牛云
           that.uploadAvatarToQiniu(localPath, (qiniuUrl) => {
+            console.log('七牛云上传回调，获得URL:', qiniuUrl)
+            logger.info('七牛云上传完成', { qiniuUrl, urlLength: qiniuUrl ? qiniuUrl.length : 0 })
             // 更新用户资料
             that.updateUserProfile(finalNickname, qiniuUrl)
           })
         } else {
+          console.warn('头像处理失败，只更新昵称')
+          logger.warn('头像处理失败，只更新昵称')
           // 头像处理失败，只更新昵称
           that.updateUserProfile(finalNickname, '')
         }
       })
     } else {
+      console.log('没有头像路径，只更新昵称')
+      logger.warn('没有头像路径，只更新昵称')
       // 没有头像，只更新昵称
       that.updateUserProfile(finalNickname, '')
     }
@@ -282,6 +321,7 @@ Page({
   uploadAvatarToQiniu(filePath, callback) {
     console.log('========== 开始上传头像到七牛云 ==========')
     console.log('文件路径:', filePath)
+    logger.info('开始上传头像到七牛云', { filePath })
 
     // 使用公开的上传凭证接口（无需认证）
     wx.request({
@@ -292,6 +332,7 @@ Page({
         if (res.data.success) {
           const { token, domain, key, uploadUrl } = res.data.data
           console.log('七牛云上传凭证:', { domain, key, uploadUrl })
+          logger.info('获取七牛云上传凭证成功', { domain, key, uploadUrl })
 
           // 上传到七牛云（使用后端返回的上传地址）
           wx.uploadFile({
@@ -305,6 +346,8 @@ Page({
             success(uploadRes) {
               console.log('七牛云上传响应 statusCode:', uploadRes.statusCode)
               console.log('七牛云上传响应 data:', uploadRes.data)
+              logger.info('七牛云上传响应', { statusCode: uploadRes.statusCode, data: uploadRes.data })
+
               if (uploadRes.statusCode === 200) {
                 try {
                   const data = JSON.parse(uploadRes.data)
@@ -319,28 +362,34 @@ Page({
                   }
 
                   console.log('✅ 头像上传成功，最终URL:', qiniuUrl)
+                  logger.info('头像上传成功', { qiniuUrl })
                   callback(qiniuUrl)
                 } catch (e) {
                   console.error('❌ 解析七牛云响应失败:', e)
+                  logger.error('解析七牛云响应失败', { error: e.message })
                   callback('')
                 }
               } else {
                 console.error('❌ 七牛云上传失败:', uploadRes)
+                logger.error('七牛云上传失败', { statusCode: uploadRes.statusCode, errMsg: uploadRes.errMsg })
                 callback('')
               }
             },
             fail(err) {
               console.error('❌ 七牛云上传失败:', err)
+              logger.error('七牛云上传请求失败', err)
               callback('')
             }
           })
         } else {
           console.error('❌ 获取上传凭证失败:', res.data)
+          logger.error('获取上传凭证失败', res.data)
           callback('')
         }
       },
       fail(err) {
         console.error('❌ 获取上传凭证请求失败:', err)
+        logger.error('获取上传凭证请求失败', err)
         callback('')
       }
     })
