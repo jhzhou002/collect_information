@@ -144,6 +144,16 @@ Page({
     })
   },
 
+  // 选择微信头像（使用官方组件）
+  handleChooseAvatar(e) {
+    console.log('选择微信头像:', e.detail.avatarUrl)
+    logger.info('选择微信头像', { avatarUrl: e.detail.avatarUrl })
+    this.setData({
+      wxAvatarUrl: e.detail.avatarUrl,
+      useWxAvatar: true
+    })
+  },
+
   // 上传自定义头像
   handleUploadCustomAvatar() {
     const that = this
@@ -153,8 +163,10 @@ Page({
       sourceType: ['album', 'camera'],
       success(res) {
         const tempFilePath = res.tempFilePaths[0]
+        logger.info('选择自定义头像', { tempFilePath })
         that.setData({
           tempAvatar: tempFilePath,
+          wxAvatarUrl: '',
           useWxAvatar: false
         })
       }
@@ -254,12 +266,12 @@ Page({
         console.log('准备上传的本地路径:', localPath)
         logger.info('准备上传头像', { localPath })
         if (localPath) {
-          // 上传到七牛云
-          that.uploadAvatarToQiniu(localPath, (qiniuUrl) => {
-            console.log('七牛云上传回调，获得URL:', qiniuUrl)
-            logger.info('七牛云上传完成', { qiniuUrl, urlLength: qiniuUrl ? qiniuUrl.length : 0 })
+          // 上传到后端（后端再上传到七牛云）
+          that.uploadAvatarToBackend(localPath, (avatarUrl) => {
+            console.log('头像上传回调，获得URL:', avatarUrl)
+            logger.info('头像上传完成', { avatarUrl, urlLength: avatarUrl ? avatarUrl.length : 0 })
             // 更新用户资料
-            that.updateUserProfile(finalNickname, qiniuUrl)
+            that.updateUserProfile(finalNickname, avatarUrl)
           })
         } else {
           console.warn('头像处理失败，只更新昵称')
@@ -317,79 +329,48 @@ Page({
     })
   },
 
-  // 上传头像到七牛云
-  uploadAvatarToQiniu(filePath, callback) {
-    console.log('========== 开始上传头像到七牛云 ==========')
+  // 上传头像（使用后端接口）
+  uploadAvatarToBackend(filePath, callback) {
+    console.log('========== 开始上传头像 ==========')
     console.log('文件路径:', filePath)
-    logger.info('开始上传头像到七牛云', { filePath })
+    logger.info('开始上传头像到后端', { filePath })
 
-    // 使用公开的上传凭证接口（无需认证）
-    wx.request({
-      url: `${getApp().globalData.apiBase}/user/public-upload-token`,
-      method: 'GET',
+    wx.uploadFile({
+      url: `${getApp().globalData.apiBase}/user/upload-avatar`,
+      filePath: filePath,
+      name: 'avatar',
       success(res) {
-        console.log('获取上传凭证响应:', res.data)
-        if (res.data.success) {
-          const { token, domain, key, uploadUrl } = res.data.data
-          console.log('七牛云上传凭证:', { domain, key, uploadUrl })
-          logger.info('获取七牛云上传凭证成功', { domain, key, uploadUrl })
+        console.log('后端上传响应 statusCode:', res.statusCode)
+        console.log('后端上传响应 data:', res.data)
+        logger.info('后端上传响应', { statusCode: res.statusCode, data: res.data })
 
-          // 上传到七牛云（使用后端返回的上传地址）
-          wx.uploadFile({
-            url: uploadUrl || 'https://upload.qiniup.com',
-            filePath: filePath,
-            name: 'file',
-            formData: {
-              token: token,
-              key: key
-            },
-            success(uploadRes) {
-              console.log('七牛云上传响应 statusCode:', uploadRes.statusCode)
-              console.log('七牛云上传响应 data:', uploadRes.data)
-              logger.info('七牛云上传响应', { statusCode: uploadRes.statusCode, data: uploadRes.data })
-
-              if (uploadRes.statusCode === 200) {
-                try {
-                  const data = JSON.parse(uploadRes.data)
-                  console.log('七牛云返回的数据:', data)
-
-                  // 七牛云 returnBody 配置返回的数据包含 url 字段
-                  let qiniuUrl = data.url
-                  if (!qiniuUrl) {
-                    // 如果没有 url 字段，手动拼接
-                    // domain 已经包含 https://，所以直接拼接
-                    qiniuUrl = `${domain}/${data.key}`
-                  }
-
-                  console.log('✅ 头像上传成功，最终URL:', qiniuUrl)
-                  logger.info('头像上传成功', { qiniuUrl })
-                  callback(qiniuUrl)
-                } catch (e) {
-                  console.error('❌ 解析七牛云响应失败:', e)
-                  logger.error('解析七牛云响应失败', { error: e.message })
-                  callback('')
-                }
-              } else {
-                console.error('❌ 七牛云上传失败:', uploadRes)
-                logger.error('七牛云上传失败', { statusCode: uploadRes.statusCode, errMsg: uploadRes.errMsg })
-                callback('')
-              }
-            },
-            fail(err) {
-              console.error('❌ 七牛云上传失败:', err)
-              logger.error('七牛云上传请求失败', err)
+        if (res.statusCode === 200) {
+          try {
+            const data = JSON.parse(res.data)
+            if (data.success) {
+              const avatarUrl = data.data.avatarUrl
+              console.log('✅ 头像上传成功，URL:', avatarUrl)
+              logger.info('头像上传成功', { avatarUrl })
+              callback(avatarUrl)
+            } else {
+              console.error('❌ 后端返回失败:', data.message)
+              logger.error('后端返回失败', { message: data.message })
               callback('')
             }
-          })
+          } catch (e) {
+            console.error('❌ 解析响应失败:', e)
+            logger.error('解析响应失败', { error: e.message, data: res.data })
+            callback('')
+          }
         } else {
-          console.error('❌ 获取上传凭证失败:', res.data)
-          logger.error('获取上传凭证失败', res.data)
+          console.error('❌ 上传失败，状态码:', res.statusCode)
+          logger.error('上传失败', { statusCode: res.statusCode, data: res.data })
           callback('')
         }
       },
       fail(err) {
-        console.error('❌ 获取上传凭证请求失败:', err)
-        logger.error('获取上传凭证请求失败', err)
+        console.error('❌ 上传请求失败:', err)
+        logger.error('上传请求失败', err)
         callback('')
       }
     })

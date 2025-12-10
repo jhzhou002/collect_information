@@ -192,3 +192,104 @@ exports.getPublicUploadToken = async (req, res) => {
     });
   }
 };
+
+/**
+ * 上传头像到七牛云（后端直接处理）
+ * POST /api/user/upload-avatar
+ */
+exports.uploadAvatar = async (req, res) => {
+  try {
+    const qiniu = require('qiniu');
+    const fs = require('fs');
+    const path = require('path');
+
+    console.log('========== 后端上传头像 ==========');
+    console.log('用户ID:', req.user ? req.user.id : '未登录');
+    console.log('文件信息:', req.file);
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: '未接收到文件'
+      });
+    }
+
+    // 七牛云配置
+    const accessKey = process.env.QINIU_ACCESS_KEY;
+    const secretKey = process.env.QINIU_SECRET_KEY;
+    const bucket = process.env.QINIU_BUCKET;
+    const domain = process.env.QINIU_DOMAIN;
+    const qiniuPath = process.env.QINIU_PATH || '';
+
+    const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
+    const config = new qiniu.conf.Config();
+    config.zone = qiniu.zone.Zone_z0; // 华东区
+
+    // 生成唯一文件名
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 8);
+    const ext = path.extname(req.file.originalname);
+    const key = `${qiniuPath}avatar_${timestamp}_${random}${ext}`;
+
+    console.log('生成的key:', key);
+
+    // 生成上传凭证
+    const options = {
+      scope: `${bucket}:${key}`,
+      expires: 3600
+    };
+    const putPolicy = new qiniu.rs.PutPolicy(options);
+    const uploadToken = putPolicy.uploadToken(mac);
+
+    // 上传文件
+    const formUploader = new qiniu.form_up.FormUploader(config);
+    const putExtra = new qiniu.form_up.PutExtra();
+    const localFile = req.file.path;
+
+    formUploader.putFile(uploadToken, key, localFile, putExtra, (err, body, info) => {
+      // 删除临时文件
+      try {
+        fs.unlinkSync(localFile);
+      } catch (e) {
+        console.error('删除临时文件失败:', e);
+      }
+
+      if (err) {
+        console.error('❌ 七牛云上传失败:', err);
+        return res.status(500).json({
+          success: false,
+          message: '上传失败',
+          error: err.message
+        });
+      }
+
+      if (info.statusCode === 200) {
+        const avatarUrl = `${domain}/${body.key}`;
+        console.log('✅ 头像上传成功:', avatarUrl);
+
+        res.json({
+          success: true,
+          data: {
+            avatarUrl: avatarUrl,
+            key: body.key,
+            hash: body.hash
+          }
+        });
+      } else {
+        console.error('❌ 七牛云返回错误状态码:', info.statusCode);
+        res.status(500).json({
+          success: false,
+          message: `上传失败: ${info.statusCode}`
+        });
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ 上传头像错误:', error);
+    res.status(500).json({
+      success: false,
+      message: '上传失败',
+      error: error.message
+    });
+  }
+};
