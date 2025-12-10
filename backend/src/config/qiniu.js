@@ -7,6 +7,7 @@ const secretKey = process.env.QINIU_SECRET_KEY;
 const bucket = process.env.QINIU_BUCKET;
 const domain = process.env.QINIU_DOMAIN;
 const path = process.env.QINIU_PATH;
+const uploadRegion = process.env.QINIU_UPLOAD_REGION || 'https://upload.qiniup.com'; // 默认华东区
 
 const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
 
@@ -33,7 +34,8 @@ function generateUploadToken() {
   return {
     token: uploadToken,
     domain: domain,
-    key: key
+    key: key,
+    uploadUrl: uploadRegion
   };
 }
 

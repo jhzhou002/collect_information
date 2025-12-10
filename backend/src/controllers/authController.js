@@ -22,6 +22,9 @@ exports.wxLogin = async (req, res) => {
     // 打印配置信息（用于调试）
     console.log('========== 微信登录请求 ==========');
     console.log('Code:', code);
+    console.log('Nickname:', nickname);
+    console.log('Avatar URL:', avatar);
+    console.log('Avatar URL 长度:', avatar ? avatar.length : 0);
     console.log('APPID:', process.env.WX_APPID);
     console.log('APPID前6位:', process.env.WX_APPID ? process.env.WX_APPID.substring(0, 6) : '未配置');
     console.log('SECRET:', process.env.WX_SECRET ? '已配置(长度:' + process.env.WX_SECRET.length + ')' : '未配置');
@@ -71,6 +74,11 @@ exports.wxLogin = async (req, res) => {
 
     if (users.length === 0) {
       // 新用户，插入数据库
+      console.log('========== 新用户注册 ==========');
+      console.log('OpenID:', openid);
+      console.log('要保存的 Nickname:', nickname || null);
+      console.log('要保存的 Avatar:', avatar || null);
+
       const [result] = await pool.query(
         'INSERT INTO users (openid, nickname, avatar) VALUES (?, ?, ?)',
         [openid, nickname || null, avatar || null]
@@ -83,18 +91,34 @@ exports.wxLogin = async (req, res) => {
         avatar: avatar || null,
         qrcode_url: null
       };
+
+      console.log('✅ 新用户创建成功，ID:', user.id);
+      console.log('保存后的用户信息:', user);
     } else {
       // 老用户，更新信息
       user = users[0];
 
+      console.log('========== 老用户登录 ==========');
+      console.log('用户ID:', user.id);
+      console.log('当前数据库中的信息:', { nickname: user.nickname, avatar: user.avatar });
+
       if (nickname || avatar) {
+        const newNickname = nickname || user.nickname;
+        const newAvatar = avatar || user.avatar;
+
+        console.log('准备更新用户信息:');
+        console.log('新 Nickname:', newNickname);
+        console.log('新 Avatar:', newAvatar);
+
         await pool.query(
           'UPDATE users SET nickname = ?, avatar = ? WHERE id = ?',
-          [nickname || user.nickname, avatar || user.avatar, user.id]
+          [newNickname, newAvatar, user.id]
         );
 
-        user.nickname = nickname || user.nickname;
-        user.avatar = avatar || user.avatar;
+        user.nickname = newNickname;
+        user.avatar = newAvatar;
+
+        console.log('✅ 用户信息更新成功');
       }
     }
 

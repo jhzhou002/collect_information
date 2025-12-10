@@ -14,14 +14,14 @@ function uploadImage(filePath) {
     try {
       // 1. 获取七牛云上传凭证（后端已经生成了唯一的 key）
       const tokenRes = await request.get('/user/upload-token')
-      const { token, domain, key } = tokenRes.data
+      const { token, domain, key, uploadUrl } = tokenRes.data
 
       console.log('========== 七牛云上传 ==========')
-      console.log('上传凭证:', { domain, key })
+      console.log('上传凭证:', { domain, key, uploadUrl })
 
-      // 2. 上传到七牛云
+      // 2. 上传到七牛云（使用后端返回的上传地址）
       wx.uploadFile({
-        url: 'https://upload.qiniup.com',
+        url: uploadUrl || 'https://upload.qiniup.com',
         filePath: filePath,
         name: 'file',
         formData: {

@@ -290,12 +290,12 @@ Page({
       success(res) {
         console.log('获取上传凭证响应:', res.data)
         if (res.data.success) {
-          const { token, domain, key } = res.data.data
-          console.log('七牛云上传凭证:', { domain, key })
+          const { token, domain, key, uploadUrl } = res.data.data
+          console.log('七牛云上传凭证:', { domain, key, uploadUrl })
 
-          // 上传到七牛云
+          // 上传到七牛云（使用后端返回的上传地址）
           wx.uploadFile({
-            url: 'https://upload.qiniup.com',
+            url: uploadUrl || 'https://upload.qiniup.com',
             filePath: filePath,
             name: 'file',
             formData: {

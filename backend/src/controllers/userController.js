@@ -44,20 +44,28 @@ exports.updateProfile = async (req, res) => {
     const userId = req.user.id;
     const { nickname, avatar } = req.body;
 
+    console.log('========== 更新用户资料 ==========');
+    console.log('用户ID:', userId);
+    console.log('请求参数:', { nickname, avatar });
+    console.log('Avatar URL 长度:', avatar ? avatar.length : 0);
+
     const updates = [];
     const values = [];
 
     if (nickname !== undefined) {
       updates.push('nickname = ?');
       values.push(nickname);
+      console.log('将更新 Nickname:', nickname);
     }
 
     if (avatar !== undefined) {
       updates.push('avatar = ?');
       values.push(avatar);
+      console.log('将更新 Avatar:', avatar);
     }
 
     if (updates.length === 0) {
+      console.log('❌ 没有要更新的字段');
       return res.status(400).json({
         success: false,
         message: '没有要更新的字段'
@@ -66,16 +74,23 @@ exports.updateProfile = async (req, res) => {
 
     values.push(userId);
 
+    console.log('执行 SQL 更新:', `UPDATE users SET ${updates.join(', ')} WHERE id = ?`);
+    console.log('SQL 参数:', values);
+
     await pool.query(
       `UPDATE users SET ${updates.join(', ')} WHERE id = ?`,
       values
     );
+
+    console.log('✅ 数据库更新成功');
 
     // 获取更新后的用户信息
     const [users] = await pool.query(
       'SELECT id, openid, nickname, avatar, qrcode_url FROM users WHERE id = ?',
       [userId]
     );
+
+    console.log('更新后的用户信息:', users[0]);
 
     res.json({
       success: true,
@@ -84,7 +99,7 @@ exports.updateProfile = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('更新用户信息错误:', error);
+    console.error('❌ 更新用户信息错误:', error);
     res.status(500).json({
       success: false,
       message: '更新失败',
