@@ -66,11 +66,10 @@
 
   <!-- 完善资料弹窗 -->
   <view wx:if="{{showProfileModal}}" class="profile-modal">
-    <view class="modal-mask" bindtap="handleSkipProfile"></view>
+    <view class="modal-mask"></view>
     <view class="modal-content">
       <view class="modal-header">
         <text class="modal-title">完善个人资料</text>
-        <text class="modal-skip" bindtap="handleSkipProfile">跳过</text>
       </view>
 
       <view class="modal-body">

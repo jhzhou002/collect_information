@@ -278,13 +278,6 @@ Page({
     })
   },
 
-  // 跳过资料设置
-  handleSkipProfile() {
-    this.setData({
-      showProfileModal: false
-    })
-  },
-
   // 上传头像到七牛云
   uploadAvatarToQiniu(filePath, callback) {
     console.log('========== 开始上传头像到七牛云 ==========')
